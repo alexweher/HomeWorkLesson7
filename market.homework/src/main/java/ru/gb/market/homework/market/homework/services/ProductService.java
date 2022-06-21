@@ -2,6 +2,8 @@ package ru.gb.market.homework.market.homework.services;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.gb.market.homework.market.homework.model.Product;
 import ru.gb.market.homework.market.homework.repositories.ProductRepository;
@@ -17,8 +19,8 @@ public class ProductService {
     private final ProductRepository productRepository;
 
 
-    public List<Product> findAll(){
-        return productRepository.findAll();
+    public Page<Product> findAll(int pageIndex, int pageSize){
+        return productRepository.findAll(PageRequest.of(pageIndex, pageSize));
     }
 
 
@@ -32,6 +34,7 @@ public class ProductService {
 
 
     public void deleteById(Long id) {
+
         productRepository.deleteById(id);
     }
 
@@ -42,24 +45,6 @@ public class ProductService {
         return productRepository.findQ(minPrice, maxPrice);
     }
 
-
-    public List<Product> findAllByPriceAfterAndTitleContains(int minPrice, String s){
-        return productRepository.findAllByPriceAfterAndTitleContains(minPrice, s);
-    }
-
-    public  List<Product> findProductByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice){
-        return productRepository.findProductByPriceBetween(minPrice,maxPrice);
-    }
-
-
-    public List<Product> findProductByPriceLessThan(BigDecimal maxPrice){
-        return productRepository.findProductByPriceLessThan(maxPrice);
-    }
-
-
-    public   List<Product> findProductByPriceGreaterThan(BigDecimal minPrice){
-        return productRepository.findProductByPriceGreaterThan(minPrice);
-    }
 
 
 

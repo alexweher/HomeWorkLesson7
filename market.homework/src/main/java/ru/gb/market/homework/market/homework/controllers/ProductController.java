@@ -2,6 +2,7 @@ package ru.gb.market.homework.market.homework.controllers;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import ru.gb.market.homework.market.homework.dto.ProductDto;
 import ru.gb.market.homework.market.homework.model.Category;
@@ -10,6 +11,7 @@ import ru.gb.market.homework.market.homework.services.CategoryService;
 import ru.gb.market.homework.market.homework.services.ProductService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,16 +23,14 @@ public class ProductController {
 
 
     @GetMapping("/products")
-    public List<Product> findAll() {
-        return productService.findAll();
+    public Page<ProductDto> findAll(@RequestParam(name = "p", defaultValue = "1") int pageIndex) {
+        if (pageIndex < 1) {
+            pageIndex = 1;
+        }
+        return productService.findAll(pageIndex - 1, 10).map(ProductDto::new);
     }
 
 
-//    @GetMapping("/products/{id}")
-//    public Product findById(@PathVariable Long id) {
-//        return productService.findById(id).get();
-//
-//    }
 
 
     @GetMapping("/products/{id}")
@@ -61,16 +61,8 @@ public class ProductController {
 
 
 
-    @GetMapping("/products/filter")
-    public List<Product> findByPriceAndTitle(@RequestParam (name = "min") int minPrice,
-                                             @RequestParam String s){
-        return productService.findAllByPriceAfterAndTitleContains(minPrice, s);
-    }
-
-
-    @GetMapping(value = "/products/delete/{id}")
+    @GetMapping("/products/delete/{id}")
     public void deleteProductById (@PathVariable Long id) {
-
         productService.deleteById(id);
     }
 
