@@ -1,16 +1,16 @@
 package ru.gb.market.homework.market.homework.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "products")
+@Table(name = "categories")
 @Data
 @NoArgsConstructor
-public class Product {
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -19,11 +19,6 @@ public class Product {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "price")
-    private int price;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-//     @JsonIgnore
-    private Category category;
+    @OneToMany(mappedBy = "category")
+    private List<Product> products;
 }
