@@ -19,8 +19,8 @@
         <thead>
         <tr>
             <td>ID</td>
-            <td>Title</td>
-            <td>Price</td>
+            <td>Название</td>
+            <td>Стоимость</td>
             <td>Info</td>
         </tr>
         </thead>
@@ -30,14 +30,54 @@
             <td>{{p.title}}</td>
             <td>{{p.price}}</td>
             <td>
-                <button type="button" class="btn btn-primary" ng-click="showInfo(p)" >Info</button>
+                <button type="button" class="btn btn-primary" ng-click="showInfo(p)" >Подробнее</button>
 
-                <button type="button" class="btn btn-primary" ng-click="deleteById(p)" >Delete</button>
+                <button type="button" class="btn btn-primary" ng-click="deleteById(p)" >Удалить</button>
             </td>
         </tr>
         </tbody>
     </table>
-    <button type="button" class="btn btn-primary" ng-click="loadProducts()" >Update</button>
+
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link" aria-label="Previous" ng-click="prevPage()">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <li class="page-item" ng-repeat="pageIndex in paginationArray">
+                <button class="page-link" ng-click="loadProducts(pageIndex)">{{pageIndex}}</button>
+            </li>
+
+            <li class="page-item">
+                <a class="page-link" aria-label="Next" ng-click="nextPage()">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <p></p>
+
+    <h3>Добавить продукут</h3>
+
+    <form novalidate ng-submit="createNewProduct()">
+        <div class="mb-3">
+            <label  class="form-label">Название</label>
+            <input type="text" class="form-control" placeholder="Название" ng-model="new_product.title">
+        </div>
+        <div class="mb-3">
+            <label  class="form-label">Цена</label>
+            <input type="text" class="form-control" placeholder="Цена" ng-model="new_product.price">
+        </div>
+        <select class="form-select" ng-model="new_product.categoryTitle">
+            <option value="Food">Food</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
 </div>
 </body>
 </html>
