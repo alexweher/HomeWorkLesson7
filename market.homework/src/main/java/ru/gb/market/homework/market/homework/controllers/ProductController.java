@@ -6,8 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.gb.market.homework.market.homework.dto.ProductDto;
+import ru.gb.market.homework.market.homework.exceptions.DataValidationException;
 import ru.gb.market.homework.market.homework.exceptions.ResourceNotFoundException;
 import ru.gb.market.homework.market.homework.model.Category;
 import ru.gb.market.homework.market.homework.model.Product;
@@ -48,18 +52,26 @@ public class ProductController {
 
     @PostMapping("/products")
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductDto save(@RequestBody ProductDto productDto) {
+    public ProductDto save(@RequestBody @Validated ProductDto productDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new DataValidationException(bindingResult
+                    .getAllErrors()
+                    .stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.toList()));
+        }
         Product product = new Product();
         product.setId(productDto.getId());
         product.setTitle(productDto.getTitle());
         product.setPrice(productDto.getPrice());
         Category category = categoryService.findByTitle(productDto
                         .getCategoryTitle())
-                .orElseThrow(()-> new ResourceNotFoundException("Category title = "+ productDto.getCategoryTitle() +" not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category title = " + productDto.getCategoryTitle() + " not found"));
         product.setCategory(category);
         productService.save(product);
         return new ProductDto(product);
     }
+
 
 
 
@@ -71,31 +83,15 @@ public class ProductController {
 
 
 
-//    @GetMapping("/products/delete/{id}")
-//    public void deleteProductById (@PathVariable Long id) {
-//        productService.deleteById(id);
-//    }
 
 
-
-    @PutMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateProduct(@RequestBody Product product) {
-        if (product.getId() != null) {
-            return ResponseEntity.ok(productService.saveOrUpdate(product));
-        }
-        return new ResponseEntity<>(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
+    @PutMapping("/products")
+    public void updateProduct(@RequestBody ProductDto productDto) {
+        productService.updateProductFromDto(productDto);
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProductById(@PathVariable Long id) {
-        if (productService.findById(id).isPresent()) {
-            productService.deleteProductById(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
-    }
-
 }
+
+
 
 
 
